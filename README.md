@@ -6,9 +6,7 @@ decides whether a session counts.
 
 **Live site:** https://pomodoro-leaderboard.onrender.com/ (hosted on a free tier, so the first request after a quiet period can be slow while the service wakes up)
 
-![Screenshot of the app: a 25:00 timer above the weekly leaderboard](docs/screenshot.jpg)
-
-_(Screenshot from a local development copy; replace it with one from the live site.)_
+![Screenshot of the live app: a 25:00 timer above the weekly leaderboard](docs/screenshot.png)
 
 ## What it does
 
