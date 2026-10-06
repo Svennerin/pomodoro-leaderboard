@@ -4,7 +4,7 @@ A small public web app. Create an account, run 25-minute Pomodoro sessions, and 
 weekly leaderboard based on how many sessions you completed. The **server**, not the browser,
 decides whether a session counts.
 
-**Live site:** _not deployed yet: add the URL here after deploying (see [Deploying](#deploying))_
+**Live site:** https://pomodoro-leaderboard.onrender.com/ (hosted on a free tier, so the first request after a quiet period can be slow while the service wakes up)
 
 ![Screenshot of the app: a 25:00 timer above the weekly leaderboard](docs/screenshot.jpg)
 
