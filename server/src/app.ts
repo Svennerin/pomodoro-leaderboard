@@ -1,5 +1,6 @@
 import express from "express";
 import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import type { Clock } from "./pomodoros.js";
@@ -37,6 +38,14 @@ export function createApp(options: AppOptions = {}) {
   // and lets Express see that the original request was HTTPS (needed for
   // Secure cookies).
   if (production) app.set("trust proxy", 1);
+
+  // Adds a standard set of protective response headers (Content-Security-
+  // Policy, X-Content-Type-Options, Strict-Transport-Security, ...) and
+  // removes the X-Powered-By header that advertises we run Express.
+  // There is deliberately no CORS middleware: the frontend and the API are
+  // served from the same origin, so browsers never need cross-origin access,
+  // and with no CORS headers they refuse it by default.
+  app.use(helmet());
 
   // Lets the host (and us) check that the server is up.
   app.get("/api/health", (_req, res) => {
