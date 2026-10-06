@@ -10,3 +10,15 @@ if (!connectionString) {
 
 // One shared connection pool for the whole app. All queries go through it.
 export const pool = new pg.Pool({ connectionString });
+
+// Postgres error code for "a unique index rejected this row".
+const UNIQUE_VIOLATION = "23505";
+
+export function isUniqueViolation(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    err.code === UNIQUE_VIOLATION
+  );
+}

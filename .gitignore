@@ -2,3 +2,5 @@ node_modules/
 dist/
 .env
 *.log
+# Personal study notes, not part of the project
+study/

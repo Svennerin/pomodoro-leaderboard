@@ -12,8 +12,12 @@ export default defineConfig({
     fileParallelism: false,
     // Migrates the test database once before any test file runs.
     globalSetup: ["./src/test/globalSetup.ts"],
-    // The app code reads DATABASE_URL; during tests that must be the test
-    // database, never the dev one.
-    env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },
+    env: {
+      // The app code reads DATABASE_URL; during tests that must be the test
+      // database, never the dev one.
+      DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
+      // A fixed, non-secret value just for tests.
+      SESSION_SECRET: "test-only-session-secret",
+    },
   },
 });
