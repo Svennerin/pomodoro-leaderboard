@@ -4,6 +4,7 @@ import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import type { Clock } from "./pomodoros.js";
 import { authRouter } from "./routes/auth.js";
+import { leaderboardRouter } from "./routes/leaderboard.js";
 import { pomodorosRouter } from "./routes/pomodoros.js";
 import { createSessionMiddleware } from "./session.js";
 
@@ -55,6 +56,7 @@ export function createApp(options: AppOptions = {}) {
   });
   app.use("/api/auth", authRouter(authLimiter));
   app.use("/api/pomodoros", pomodorosRouter(clock));
+  app.use("/api/leaderboard", leaderboardRouter(clock));
 
   // Any other /api path does not exist.
   app.use("/api", (_req, res) => {
