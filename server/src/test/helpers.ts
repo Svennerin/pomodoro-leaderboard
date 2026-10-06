@@ -1,3 +1,5 @@
+import type { Express } from "express";
+import request from "supertest";
 import { type AppOptions, createApp } from "../app.js";
 import { pool } from "../db.js";
 
@@ -17,6 +19,35 @@ export function createTestApp(options: AppOptions = {}) {
     authRateLimit: { windowMs: 60_000, limit: 1000 },
     ...options,
   });
+}
+
+// A clock the test controls. Start time is a Wednesday, mid-week, so tests
+// that move a few minutes never cross a week boundary by accident.
+export function createFakeClock(start = new Date("2026-01-07T12:00:00.000Z")) {
+  let currentMs = start.getTime();
+  return {
+    clock: () => new Date(currentMs),
+    advanceSeconds(seconds: number) {
+      currentMs += seconds * 1000;
+    },
+    advanceMinutes(minutes: number) {
+      currentMs += minutes * 60 * 1000;
+    },
+    set(date: Date) {
+      currentMs = date.getTime();
+    },
+  };
+}
+
+// Registers a new user through the API; the returned agent keeps the
+// session cookie, so it acts as that logged-in user.
+export async function createLoggedInAgent(app: Express, username: string) {
+  const agent = request.agent(app);
+  const res = await agent
+    .post("/api/auth/register")
+    .send({ username, password: "test password 123" });
+  if (res.status !== 201) throw new Error(`Could not register ${username}`);
+  return agent;
 }
 
 // Inserts a user directly (bypassing the API) and returns its id.

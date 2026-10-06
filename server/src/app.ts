@@ -2,10 +2,14 @@ import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import type { Clock } from "./pomodoros.js";
 import { authRouter } from "./routes/auth.js";
+import { pomodorosRouter } from "./routes/pomodoros.js";
 import { createSessionMiddleware } from "./session.js";
 
 export interface AppOptions {
+  // Source of "now" for every timing decision. Tests inject a fake one.
+  clock?: Clock;
   // Whether to behave as in production (Secure cookies, trust the host's
   // proxy). Defaults to the NODE_ENV setting; tests override it.
   production?: boolean;
@@ -23,6 +27,7 @@ const DEFAULT_AUTH_RATE_LIMIT = { windowMs: 15 * 60 * 1000, limit: 10 };
 export function createApp(options: AppOptions = {}) {
   const production = options.production ?? config.isProduction;
   const authRateLimit = options.authRateLimit ?? DEFAULT_AUTH_RATE_LIMIT;
+  const clock = options.clock ?? (() => new Date());
 
   const app = express();
 
@@ -49,6 +54,7 @@ export function createApp(options: AppOptions = {}) {
     message: { error: "Too many attempts. Please try again later." },
   });
   app.use("/api/auth", authRouter(authLimiter));
+  app.use("/api/pomodoros", pomodorosRouter(clock));
 
   // Any other /api path does not exist.
   app.use("/api", (_req, res) => {
