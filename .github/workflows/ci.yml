@@ -8,6 +8,24 @@ jobs:
     defaults:
       run:
         working-directory: server
+    # A throwaway Postgres that exists only for this CI run, so the tests
+    # run against a real database. The credentials are not secret.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: pomodoro
+          POSTGRES_PASSWORD: pomodoro
+          POSTGRES_DB: pomodoro_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pomodoro"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://pomodoro:pomodoro@localhost:5432/pomodoro_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
