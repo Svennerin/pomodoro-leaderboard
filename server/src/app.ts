@@ -10,6 +10,9 @@ import { pomodorosRouter } from "./routes/pomodoros.js";
 import { createSessionMiddleware } from "./session.js";
 
 export interface AppOptions {
+  // Folder holding the built frontend (client/dist). When given, Express
+  // serves it, so one service delivers both the page and the API.
+  clientDir?: string;
   // Source of "now" for every timing decision. Tests inject a fake one.
   clock?: Clock;
   // Whether to behave as in production (Secure cookies, trust the host's
@@ -71,6 +74,13 @@ export function createApp(options: AppOptions = {}) {
   app.use("/api", (_req, res) => {
     res.status(404).json({ error: "Not found" });
   });
+
+  // Everything that is not an API route is a file of the built frontend
+  // (index.html, scripts, styles). This sits after the API routes, so a path
+  // starting with /api is never answered with a page.
+  if (options.clientDir) {
+    app.use(express.static(options.clientDir));
+  }
 
   app.use(errorHandler);
 
